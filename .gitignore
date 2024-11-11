@@ -1,0 +1,11 @@
+venv
+data
+googlFile
+src/assets
+src/practice
+uploads
+output.csv
+src/__pycache__
+src/service/__pycache__
+__pycache__
+src/service/handwritten_service.py
