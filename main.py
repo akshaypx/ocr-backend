@@ -18,6 +18,7 @@ from src.service.pdf_reader_service import extract_text_from_pdf
 from src.service.anthropic_service import get_anthropic_result, get_anthropic_result_handwritten
 from src.service.ocr_service import get_ocr_result
 from src.service.handwritten_textract import handwritten_ocr_data_process
+from src.service.search_service import search_product
 
 app = FastAPI()
 
@@ -59,26 +60,40 @@ class Item(BaseModel):
 class Payload(BaseModel):
     products: List[Item]
 
-# @app.post("/search")
-# async def search_ocr(data: Payload):
+@app.post("/search")
+async def search_ocr(data: Payload):
     
-#     products_with_details = []
+    products_with_details = []
     
-#     for item in data.products:
-#         data = search_products(name=item.name)
+    for item in data.products:
+        data = search_product(name=item.name)
         
-#         if not data:
-#             raise HTTPException(status_code=404, detail=f"No data found for product : {item.name}")
+        if not data:
+            raise HTTPException(status_code=404, detail=f"No data found for product : {item.name}")
         
-#         product_details = {
-#             "name": item.name,
-#             "quantity": item.quantity,
-#             "search_results": data  
-#         }
+        search_details = data["detail"]
+        new_data_list = []
+        for entry in search_details:
+            new_data = {
+                "product_name": entry["_source"]["Name"]["en"],
+                "product_code": entry["_source"]["Code"],
+                "score": entry["_score"],
+                "price": next((price["value"] for price in entry["_source"]["Price"] if price["currency"] == "US Dollar"), None),
+                "description":entry["_source"]["Description"]["en"],
+                "summary":entry["_source"]["Summary"]["en"],
+                "image_link":entry["_source"]["Image"],
+            }
+            new_data_list.append(new_data)
         
-#         products_with_details.append(product_details)
+        product_details = {
+            "name": item.name,
+            "quantity": item.quantity,
+            "search_results": new_data_list
+        }
+        
+        products_with_details.append(product_details)
     
-#     return JSONResponse(content={'products':products_with_details})
+    return JSONResponse(content={'products':products_with_details})
             
 
 @app.post("/upload")
