@@ -29,28 +29,6 @@ model_id = "anthropic.claude-3-haiku-20240307-v1:0"
 
 # for standard templates only
 def get_anthropic_result(data):
-    # prompt = """i have a result of ocr from easy ocr and i want you to convert it into the json of following format-
-    # {
-    # "client_gst": ["", ],
-    # "client_name": ["", ],
-    # "client_address": ["", ],
-    # "client_city": ["", ],
-    # "client_postcode": ["", ],
-    # "client_contact": ["", ],
-    # "products": [
-    #     {
-    #     "item": ["", ],
-    #     "price": ["", ],
-    #     "quantity": ["", ],
-    #     "total": ["", ]
-    #     },]}
-
-    # and here is the result of ocr-
-    # """ + data + """
-
-    # The final json will consist of each key containing a list of string value and it's respective confidence score only.
-    # Return only the final json and nothing else.
-    # """
     prompt = """i have a result of ocr from easy ocr and i want you to convert it into the json of following format-
     {
     "client_gst": {
@@ -124,28 +102,6 @@ def get_anthropic_result(data):
 
 # for handwritten slips
 def get_anthropic_result_handwritten(data):
-    # prompt = """i have a result of ocr from easy ocr and i want you to convert it into the json of following format-
-    # {
-    # "client_gst": ["", ],
-    # "client_name": ["", ],
-    # "client_address": ["", ],
-    # "client_city": ["", ],
-    # "client_postcode": ["", ],
-    # "client_contact": ["", ],
-    # "products": [
-    #     {
-    #     "item": ["", ],
-    #     "price": ["", ],
-    #     "quantity": ["", ],
-    #     "total": ["", ]
-    #     },]}
-
-    # and here is the result of ocr-
-    # """ + data + """
-
-    # The final json will consist of each key containing a list of string value and it's respective confidence score only.
-    # Return only the final json and nothing else.
-    # """
     prompt = """I have a result of OCR from AWS Textract and I want you to convert it into a JSON of the following format:
     
     [
@@ -197,6 +153,3 @@ def get_anthropic_result_handwritten(data):
     # print(response_text)
     return response_text
 
-
-
-# # SAMPLE PROMPT

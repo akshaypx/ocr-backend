@@ -1,28 +1,3 @@
-# from fastapi import UploadFile
-# import boto3
-
-# async def handwritten_ocr_data_process(uploaded_file: UploadFile):
-    
-#     print("handwritten_ocr_data_process() invoked")
-    
-#     # read file in bytes
-#     file_bytes=uploaded_file.file.read()
-    
-#     # Initialize Textract client
-#     textract = boto3.client('textract')
-#     response= textract.detect_document_text(Document={'Bytes': file_bytes})
-    
-#     # Extract words with their confidence scores
-#     words_with_confidence = []
-    
-#     # Iterate over the blocks in the response
-#     for block in response.get('Blocks', []):
-#         if block['BlockType'] == 'WORD':
-#             words_with_confidence.append([block['Text'], block['Confidence']])
-            
-    
-#     return words_with_confidence
-
 from fastapi import UploadFile
 import boto3
 
