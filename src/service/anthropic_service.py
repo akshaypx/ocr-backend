@@ -5,7 +5,24 @@ import json
 
 from botocore.exceptions import ClientError
 
-client = boto3.client("bedrock-runtime", region_name="ap-south-1")
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Retrieve the AWS credentials from environment variables
+aws_access_key_id = os.getenv("AWS_ACCESS_KEY_ID")
+aws_secret_access_key = os.getenv("AWS_SECRET_ACCESS_KEY")
+region_name = os.getenv("AWS_DEFAULT_REGION")
+
+# Create a boto3 client using the environment variables
+client = boto3.client(
+    "bedrock-runtime", 
+    region_name=region_name, 
+    aws_access_key_id=aws_access_key_id, 
+    aws_secret_access_key=aws_secret_access_key
+)
 
 
 model_id = "anthropic.claude-3-haiku-20240307-v1:0"
@@ -129,22 +146,23 @@ def get_anthropic_result_handwritten(data):
     # The final json will consist of each key containing a list of string value and it's respective confidence score only.
     # Return only the final json and nothing else.
     # """
-    prompt = """i have a result of ocr from easy ocr and i want you to convert it into the json of following format-
+    prompt = """I have a result of OCR from AWS Textract and I want you to convert it into a JSON of the following format:
     
     [
         {
-    Material: string;
-    Quantity: string;
-    Confidence: string;
-            },
-        ]
+            "Material": string,
+            "Quantity": string,
+            "Confidence": string
+        }
+    ]
     
-
-    and here is the result of ocr-
+    Each key should contain a single string value, and the "Confidence" key should only contain one confidence score (not multiple). Ensure each line has one confidence score associated with its corresponding data.
+    
+    Here is the result of the OCR:
     """ + data + """
-
-    The final json will consist of each key containing a list of string value and it's respective confidence score only.
-    Return only the final json and nothing else.
+    
+    Please return only the final JSON in the specified format, with each data item containing one confidence score per line.
+    Give only the JSON, nothing else.
     """
 
     # Format the request payload using the model's native structure.

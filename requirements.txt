@@ -1,0 +1,9 @@
+boto3
+fastapi
+pydantic
+uvicorn
+easyocr
+pdfplumber
+python-multipart
+python-dotenv
+requests

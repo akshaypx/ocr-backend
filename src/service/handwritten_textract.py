@@ -36,7 +36,9 @@ async def handwritten_ocr_data_process(uploaded_file: UploadFile):
     # Initialize Textract client
     textract = boto3.client('textract')
     response = textract.detect_document_text(Document={'Bytes': file_bytes})
+    print("//------------------------//")
     
+    print(response,"//")
     # Extract words with their confidence scores
     words_with_confidence = []
     

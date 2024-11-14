@@ -20,6 +20,7 @@ from src.service.ocr_service import get_ocr_result
 from src.service.handwritten_textract import handwritten_ocr_data_process
 from src.service.search_service import search_product
 
+
 app = FastAPI()
 
 # Directory to save uploaded files
@@ -62,6 +63,12 @@ class Payload(BaseModel):
 
 @app.post("/search")
 async def search_ocr(data: Payload):
+    cache_key = str(data)
+   
+    # Check if result is already in the cache
+    if cache_key in cache:
+        await asyncio.sleep(3)
+        return JSONResponse(content={'products': cache[cache_key]})
     
     products_with_details = []
     
@@ -90,11 +97,48 @@ async def search_ocr(data: Payload):
             "quantity": item.quantity,
             "search_results": new_data_list
         }
+ 
         
+ 
         products_with_details.append(product_details)
     
+    cache[cache_key] = products_with_details
     return JSONResponse(content={'products':products_with_details})
-            
+      
+# @app.post("/search")
+# async def search_ocr(data: Payload):
+    
+#     products_with_details = []
+    
+#     for item in data.products:
+#         data = search_product(name=item.name)
+        
+#         if not data:
+#             raise HTTPException(status_code=404, detail=f"No data found for product : {item.name}")
+        
+#         search_details = data["detail"]
+#         new_data_list = []
+#         for entry in search_details:
+#             new_data = {
+#                 "product_name": entry["_source"]["Name"]["en"],
+#                 "product_code": entry["_source"]["Code"],
+#                 "score": entry["_score"],
+#                 "price": next((price["value"] for price in entry["_source"]["Price"] if price["currency"] == "US Dollar"), None),
+#                 "description":entry["_source"]["Description"]["en"],
+#                 "summary":entry["_source"]["Summary"]["en"],
+#                 "image_link":entry["_source"]["Image"],
+#             }
+#             new_data_list.append(new_data)
+        
+#         product_details = {
+#             "name": item.name,
+#             "quantity": item.quantity,
+#             "search_results": new_data_list
+#         }
+        
+#         products_with_details.append(product_details)
+    
+#     return JSONResponse(content={'products':products_with_details})      
 
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
@@ -149,26 +193,6 @@ async def upload_file(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
 
-# from google.auth.transport.requests import Request
-# from google.oauth2.service_account import Credentials
-# from fastapi.middleware.cors import CORSMiddleware
-# service_account_file = "C://Users//akshaysrivastava//Downloads//pdftocsv//googlFile//service_keys_buretail.json"
-# scopes = ['https://www.googleapis.com/auth/cloud-platform']
-# credentials = Credentials.from_service_account_file(service_account_file, scopes=scopes)
-# @app.get("/api/get-access-token")
-# async def get_access_token():
-#     try:
-#         credentials.refresh(Request())
-#         return {"access_token": credentials.token}
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
-
-# @app.post("/send-ocr-image")
-# async def send_ocr_test(uploaded_file: UploadFile):
-#     print("API /send-ocr-file")
-#     print('inside send_ocr_test')
-#     result_text = await read_file(uploaded_file)
-#     return result_text
 
 @app.post("/handwritten-ocr-data")
 async def send_handwritten_ocr_data(uploaded_file: UploadFile):
@@ -177,3 +201,7 @@ async def send_handwritten_ocr_data(uploaded_file: UploadFile):
     print("result from textract received",result)
     anthropic_result = get_anthropic_result_handwritten(data=result)
     return anthropic_result
+
+
+
+
