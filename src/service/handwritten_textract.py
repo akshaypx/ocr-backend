@@ -1,12 +1,12 @@
 from fastapi import UploadFile
 import boto3
 
-async def handwritten_ocr_data_process(uploaded_file: UploadFile):
+async def handwritten_ocr_data_process(file_bytes):
     
     print("handwritten_ocr_data_process() invoked")
     
     # Read file in bytes
-    file_bytes = uploaded_file.file.read()
+    # file_bytes = uploaded_file.file.read()
     
     # Initialize Textract client
     textract = boto3.client('textract')

@@ -7,3 +7,7 @@ pdfplumber
 python-multipart
 python-dotenv
 requests
+pdf2image
+pillow
+python-magic-bin
+pymupdf
