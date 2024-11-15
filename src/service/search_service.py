@@ -1,9 +1,14 @@
 import json
 import requests
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
 
 def search_product(name:str):
 
-    url = "http://13.235.83.90:8000/searchocr"
+    url = "http://"+os.getenv("SEARCH_URL")+":8000/searchocr"
 
     payload = json.dumps({
     "query": name,
